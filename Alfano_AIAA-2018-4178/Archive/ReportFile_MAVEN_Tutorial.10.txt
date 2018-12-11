@@ -1,4 +1,0 @@
-MAVEN.UTCGregorian        TCM.Element1              TCM.Element2              TCM.Element3              MAVEN.MarsInertial.BdotT   MAVEN.MarsInertial.BdotR   MAVEN.MarsInertial.INC    
-21 Sep 2014 21:34:28.070   0.003374971911055678      0.006520509732657213      -0.0001802431241819953    3.194945747964084e-07      -7000.000000287811         89.99999999764516         
-MAVEN.UTCGregorian        TCM.Element1              TCM.Element2              TCM.Element3              MAVEN.MarsInertial.BdotR   MAVEN.MarsInertial.BdotT   MAVEN.MarsInertial.INC    
-21 Sep 2014 21:34:28.070   0.003374971911055678      0.006520509732657213      -0.0001802431241819953    -7000.000000287811         3.194945747964084e-07      89.99999999764516         
