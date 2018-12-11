@@ -1,0 +1,310 @@
+%General Mission Analysis Tool(GMAT) Script
+%Title: GSAT-6A Mission
+%Created: 10 April 2018
+%Originator: chelms@socal.rr.com
+
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft geoSat;
+GMAT geoSat.DateFormat = TAIGregorian;
+GMAT geoSat.Epoch = '29 Mar 2018 11:26:00.000';
+GMAT geoSat.CoordinateSystem = EarthMJ2000Eq;
+GMAT geoSat.DisplayStateType = Keplerian;
+GMAT geoSat.SMA = 6527.000000000007;
+GMAT geoSat.ECC = 0.001000000000001084;
+GMAT geoSat.INC = 20.69999999999999;
+GMAT geoSat.RAAN = 112.18;
+GMAT geoSat.AOP = 355.0000000000271;
+GMAT geoSat.TA = 250.0000000000462;
+GMAT geoSat.DryMass = 2066;
+GMAT geoSat.Cd = 2.2;
+GMAT geoSat.Cr = 1.8;
+GMAT geoSat.DragArea = 15;
+GMAT geoSat.SRPArea = 1;
+GMAT geoSat.Tanks = {ChemicalTank1};
+GMAT geoSat.NAIFId = -123456789;
+GMAT geoSat.NAIFIdReferenceFrame = -123456789;
+GMAT geoSat.OrbitColor = Red;
+GMAT geoSat.TargetColor = Teal;
+GMAT geoSat.EstimationStateType = 'Cartesian';
+GMAT geoSat.OrbitErrorCovariance = [ 1e+070 0 0 0 0 0 ; 0 1e+070 0 0 0 0 ; 0 0 1e+070 0 0 0 ; 0 0 0 1e+070 0 0 ; 0 0 0 0 1e+070 0 ; 0 0 0 0 0 1e+070 ];
+GMAT geoSat.CdSigma = 1e+070;
+GMAT geoSat.CrSigma = 1e+070;
+GMAT geoSat.Id = 'SatId';
+GMAT geoSat.Attitude = CoordinateSystemFixed;
+GMAT geoSat.SPADSRPScaleFactor = 1;
+GMAT geoSat.ModelFile = '../data/vehicle/models/aura.3ds';
+GMAT geoSat.ModelOffsetX = 0;
+GMAT geoSat.ModelOffsetY = 0;
+GMAT geoSat.ModelOffsetZ = 0;
+GMAT geoSat.ModelRotationX = 0;
+GMAT geoSat.ModelRotationY = 0;
+GMAT geoSat.ModelRotationZ = 0;
+GMAT geoSat.ModelScale = 3;
+GMAT geoSat.AttitudeDisplayStateType = 'Quaternion';
+GMAT geoSat.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT geoSat.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT geoSat.EulerAngleSequence = '321';
+
+%----------------------------------------
+%---------- Hardware Components
+%----------------------------------------
+
+Create ChemicalTank ChemicalTank1;
+GMAT ChemicalTank1.AllowNegativeFuelMass = false;
+GMAT ChemicalTank1.FuelMass = 14000;
+GMAT ChemicalTank1.Pressure = 1500;
+GMAT ChemicalTank1.Temperature = 20;
+GMAT ChemicalTank1.RefTemperature = 20;
+GMAT ChemicalTank1.Volume = 12;
+GMAT ChemicalTank1.FuelDensity = 1260;
+GMAT ChemicalTank1.PressureModel = PressureRegulated;
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel AllForces;
+GMAT AllForces.CentralBody = Earth;
+GMAT AllForces.PrimaryBodies = {Earth};
+GMAT AllForces.SRP = On;
+GMAT AllForces.RelativisticCorrection = Off;
+GMAT AllForces.ErrorControl = RSSStep;
+GMAT AllForces.GravityField.Earth.Degree = 20;
+GMAT AllForces.GravityField.Earth.Order = 20;
+GMAT AllForces.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT AllForces.GravityField.Earth.EarthTideModel = 'None';
+GMAT AllForces.SRP.Flux = 1367;
+GMAT AllForces.SRP.SRPModel = Spherical;
+GMAT AllForces.SRP.Nominal_Sun = 149597870.691;
+GMAT AllForces.Drag.AtmosphereModel = MSISE90;
+GMAT AllForces.Drag.HistoricWeatherSource = 'ConstantFluxAndGeoMag';
+GMAT AllForces.Drag.PredictedWeatherSource = 'ConstantFluxAndGeoMag';
+GMAT AllForces.Drag.CSSISpaceWeatherFile = 'SpaceWeather-All-v1.2.txt';
+GMAT AllForces.Drag.SchattenFile = 'SchattenPredict.txt';
+GMAT AllForces.Drag.F107 = 150;
+GMAT AllForces.Drag.F107A = 150;
+GMAT AllForces.Drag.MagneticIndex = 3;
+GMAT AllForces.Drag.SchattenErrorModel = 'Nominal';
+GMAT AllForces.Drag.SchattenTimingModel = 'NominalCycle';
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator DefaultProp;
+GMAT DefaultProp.FM = AllForces;
+GMAT DefaultProp.Type = PrinceDormand78;
+GMAT DefaultProp.InitialStepSize = 60;
+GMAT DefaultProp.Accuracy = 9.999999999999999e-012;
+GMAT DefaultProp.MinStep = 0.001;
+GMAT DefaultProp.MaxStep = 86400;
+GMAT DefaultProp.MaxStepAttempts = 50;
+GMAT DefaultProp.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn TOI;
+GMAT TOI.CoordinateSystem = Local;
+GMAT TOI.Origin = Earth;
+GMAT TOI.Axes = VNB;
+GMAT TOI.Element1 = 0;
+GMAT TOI.Element2 = 0;
+GMAT TOI.Element3 = 0;
+GMAT TOI.DecrementMass = true;
+GMAT TOI.Tank = {ChemicalTank1};
+GMAT TOI.Isp = 300;
+GMAT TOI.GravitationalAccel = 9.810000000000001;
+
+Create ImpulsiveBurn MCC;
+GMAT MCC.CoordinateSystem = Local;
+GMAT MCC.Origin = Earth;
+GMAT MCC.Axes = VNB;
+GMAT MCC.Element1 = 0;
+GMAT MCC.Element2 = 0;
+GMAT MCC.Element3 = 0;
+GMAT MCC.DecrementMass = true;
+GMAT MCC.Tank = {ChemicalTank1};
+GMAT MCC.Isp = 300;
+GMAT MCC.GravitationalAccel = 9.810000000000001;
+
+Create ImpulsiveBurn MOI;
+GMAT MOI.CoordinateSystem = Local;
+GMAT MOI.Origin = Earth;
+GMAT MOI.Axes = VNB;
+GMAT MOI.Element1 = 0;
+GMAT MOI.Element2 = 0;
+GMAT MOI.Element3 = 0;
+GMAT MOI.DecrementMass = true;
+GMAT MOI.Tank = {ChemicalTank1};
+GMAT MOI.Isp = 300;
+GMAT MOI.GravitationalAccel = 9.810000000000001;
+
+%----------------------------------------
+%---------- Solvers
+%----------------------------------------
+
+Create DifferentialCorrector DC;
+GMAT DC.ShowProgress = true;
+GMAT DC.ReportStyle = Normal;
+GMAT DC.ReportFile = 'DifferentialCorrectorDC1.data';
+GMAT DC.MaximumIterations = 25;
+GMAT DC.DerivativeMethod = ForwardDifference;
+GMAT DC.Algorithm = NewtonRaphson;
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView inertialView;
+GMAT inertialView.SolverIterations = Current;
+GMAT inertialView.UpperLeft = [ 0.3629411764705882 0.001136363636363636 ];
+GMAT inertialView.Size = [ 0.5747058823529412 0.4636363636363636 ];
+GMAT inertialView.RelativeZOrder = 287;
+GMAT inertialView.Maximized = false;
+GMAT inertialView.Add = {geoSat, Earth};
+GMAT inertialView.CoordinateSystem = EarthMJ2000Eq;
+GMAT inertialView.DrawObject = [ true true ];
+GMAT inertialView.DataCollectFrequency = 1;
+GMAT inertialView.UpdatePlotFrequency = 50;
+GMAT inertialView.NumPointsToRedraw = 200;
+GMAT inertialView.ShowPlot = true;
+GMAT inertialView.ShowLabels = true;
+GMAT inertialView.ViewPointReference = Earth;
+GMAT inertialView.ViewPointVector = [ 20000 -70000 20000 ];
+GMAT inertialView.ViewDirection = Earth;
+GMAT inertialView.ViewScaleFactor = 1;
+GMAT inertialView.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT inertialView.ViewUpAxis = Z;
+GMAT inertialView.EclipticPlane = Off;
+GMAT inertialView.XYPlane = Off;
+GMAT inertialView.WireFrame = Off;
+GMAT inertialView.Axes = On;
+GMAT inertialView.Grid = Off;
+GMAT inertialView.SunLine = Off;
+GMAT inertialView.UseInitialView = On;
+GMAT inertialView.StarCount = 2000;
+GMAT inertialView.EnableStars = On;
+GMAT inertialView.EnableConstellations = On;
+
+Create OrbitView fixedView;
+GMAT fixedView.SolverIterations = Current;
+GMAT fixedView.UpperLeft = [ 0.3623529411764706 0.4795454545454546 ];
+GMAT fixedView.Size = [ 0.5752941176470588 0.4738636363636364 ];
+GMAT fixedView.RelativeZOrder = 283;
+GMAT fixedView.Maximized = false;
+GMAT fixedView.Add = {geoSat, Earth};
+GMAT fixedView.CoordinateSystem = EarthFixed;
+GMAT fixedView.DrawObject = [ true true ];
+GMAT fixedView.DataCollectFrequency = 1;
+GMAT fixedView.UpdatePlotFrequency = 50;
+GMAT fixedView.NumPointsToRedraw = 200;
+GMAT fixedView.ShowPlot = true;
+GMAT fixedView.ShowLabels = true;
+GMAT fixedView.ViewPointReference = Earth;
+GMAT fixedView.ViewPointVector = [ -20000 -50000 0 ];
+GMAT fixedView.ViewDirection = Earth;
+GMAT fixedView.ViewScaleFactor = 1.2;
+GMAT fixedView.ViewUpCoordinateSystem = EarthFixed;
+GMAT fixedView.ViewUpAxis = Z;
+GMAT fixedView.EclipticPlane = Off;
+GMAT fixedView.XYPlane = Off;
+GMAT fixedView.WireFrame = Off;
+GMAT fixedView.Axes = On;
+GMAT fixedView.Grid = Off;
+GMAT fixedView.SunLine = Off;
+GMAT fixedView.UseInitialView = On;
+GMAT fixedView.StarCount = 2000;
+GMAT fixedView.EnableStars = On;
+GMAT fixedView.EnableConstellations = On;
+
+Create ReportFile ReportFile1;
+GMAT ReportFile1.SolverIterations = All;
+GMAT ReportFile1.UpperLeft = [ 0 0 ];
+GMAT ReportFile1.Size = [ 0 0 ];
+GMAT ReportFile1.RelativeZOrder = 0;
+GMAT ReportFile1.Maximized = false;
+GMAT ReportFile1.Filename = 'C:\Users\chelm\Documents\WorkingFolder\ProjectRoot\GMAT\GSTA-6A_GTO.csv';
+GMAT ReportFile1.Precision = 16;
+GMAT ReportFile1.Add = {geoSat.A1ModJulian, geoSat.EarthMJ2000Eq.X, geoSat.Earth.RMAG, geoSat.Earth.ECC, geoSat.EarthMJ2000Eq.INC, TOI.Element1, TOI.Element2, TOI.Element3, MCC.Element1, MCC.Element2, MCC.Element3, MOI.Element1, MOI.Element2, MOI.Element3};
+GMAT ReportFile1.WriteHeaders = true;
+GMAT ReportFile1.LeftJustify = On;
+GMAT ReportFile1.ZeroFill = Off;
+GMAT ReportFile1.FixedWidth = false;
+GMAT ReportFile1.Delimiter = ',';
+GMAT ReportFile1.ColumnWidth = 23;
+GMAT ReportFile1.WriteReport = true;
+
+%----------------------------------------
+%---------- Arrays, Variables, Strings
+%----------------------------------------
+Create Variable I lowerBound upperBound;
+GMAT lowerBound = -119;
+GMAT upperBound = -117.5;
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Propagate 'Prop to Z Crossing' DefaultProp(geoSat) {geoSat.Z = 0, StopTolerance = 1e-005};
+
+Target 'Raise Apogee' DC {SolveMode = Solve, ExitMode = SaveAndContinue, ShowProgressWindow = true};
+   Vary 'Vary TOI.V' DC(TOI.Element1 = 1, {Perturbation = .0001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = .5, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver 'Apply TOI' TOI(geoSat);
+   Propagate 'Prop To Apogee' DefaultProp(geoSat) {geoSat.Apoapsis};
+   Achieve 'Achieve RMAG' DC(geoSat.RMAG = 42886, {Tolerance = .1});
+EndTarget;  % For targeter DC
+
+Propagate 'Prop to Perigee' DefaultProp(geoSat) {geoSat.Earth.Periapsis};
+Propagate 'Prop to Plane Crossing' DefaultProp(geoSat) {geoSat.Z = 0, StopTolerance = 1e-005};
+
+Target 'Change Plane/Perigee' DC {SolveMode = Solve, ExitMode = SaveAndContinue, ShowProgressWindow = true};
+   Vary 'Vary MCC.V' DC(MCC.Element1 = 0.1, {Perturbation = .0001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 0.5, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary 'Vary MCC.N' DC(MCC.Element2 = 0.1, {Perturbation = .0001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = 0.5, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver 'Apply MCC' MCC(geoSat);
+   Propagate 'Prop to Perigee' DefaultProp(geoSat) {geoSat.Periapsis};
+   Achieve 'Apply INC' DC(geoSat.EarthMJ2000Eq.INC = 2, {Tolerance = .001});
+   Achieve 'Achieve RMAG' DC(geoSat.RMAG = 42195, {Tolerance = .001});
+EndTarget;  % For targeter DC
+
+Target 'Lower Apogee' DC {SolveMode = Solve, ExitMode = SaveAndContinue, ShowProgressWindow = true};
+   Vary 'Vary MOI.V' DC(MOI.Element1 = -0.1, {Perturbation = .0001, Lower = -9.999999e300, Upper = 9.999999e300, MaxStep = .1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver 'Apply MOI' MOI(geoSat);
+   Achieve 'Achieve SMA' DC(geoSat.Earth.SMA = 42166.90, {Tolerance = .001});
+EndTarget;  % For targeter DC
+
+Propagate 'Prop 10 days' DefaultProp(geoSat) {geoSat.ElapsedDays = 10};
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,705 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2018-04-14 15:37:57
+%Initial model for multiple HET, High-power vehicle
+%Initial attempt at implementing Alfano Control Law
+%Author: colinhelms@outlook.com
+%Last revision on the branch: 8 
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft EOTV;
+GMAT EOTV.DateFormat = UTCGregorian;
+GMAT EOTV.Epoch = '30 Dec 2020 23:59:28.000';
+GMAT EOTV.CoordinateSystem = EarthMJ2000Eq;
+GMAT EOTV.DisplayStateType = Keplerian;
+GMAT EOTV.SMA = 6878.000000000005;
+GMAT EOTV.ECC = 0.02454974900598142;
+GMAT EOTV.INC = 28.5;
+GMAT EOTV.RAAN = 306.6148021947984;
+GMAT EOTV.AOP = 314.1905515359957;
+GMAT EOTV.TA = 99.8877493320452;
+GMAT EOTV.DryMass = 7609;
+GMAT EOTV.Cd = 2.2;
+GMAT EOTV.Cr = 1.8;
+GMAT EOTV.DragArea = 15;
+GMAT EOTV.SRPArea = 1;
+GMAT EOTV.Tanks = {RAPTank1, RAPTank2, RAPTank3, RAPTank4};
+GMAT EOTV.Thrusters = {HET1, HET2, HET3, HET4, HET5, HET6, HET7, HET8, HET9, HET10, HET11, HET12, HET13, HET14, HET15, HET16};
+GMAT EOTV.PowerSystem = EOTVSolarArrays;
+GMAT EOTV.NAIFId = -10004001;
+GMAT EOTV.NAIFIdReferenceFrame = -9004001;
+GMAT EOTV.OrbitColor = Red;
+GMAT EOTV.TargetColor = Teal;
+GMAT EOTV.EstimationStateType = 'Cartesian';
+GMAT EOTV.OrbitErrorCovariance = [ 1e+070 0 0 0 0 0 ; 0 1e+070 0 0 0 0 ; 0 0 1e+070 0 0 0 ; 0 0 0 1e+070 0 0 ; 0 0 0 0 1e+070 0 ; 0 0 0 0 0 1e+070 ];
+GMAT EOTV.CdSigma = 1e+070;
+GMAT EOTV.CrSigma = 1e+070;
+GMAT EOTV.Id = 'SatId';
+GMAT EOTV.Attitude = CoordinateSystemFixed;
+GMAT EOTV.SPADSRPScaleFactor = 1;
+GMAT EOTV.ModelFile = 'aura.3ds';
+GMAT EOTV.ModelOffsetX = 0;
+GMAT EOTV.ModelOffsetY = 0;
+GMAT EOTV.ModelOffsetZ = 0;
+GMAT EOTV.ModelRotationX = 0;
+GMAT EOTV.ModelRotationY = 0;
+GMAT EOTV.ModelRotationZ = 0;
+GMAT EOTV.ModelScale = 1;
+GMAT EOTV.AttitudeDisplayStateType = 'Quaternion';
+GMAT EOTV.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT EOTV.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT EOTV.EulerAngleSequence = '321';
+
+%----------------------------------------
+%---------- Hardware Components
+%----------------------------------------
+
+Create ElectricThruster HET1;
+GMAT HET1.CoordinateSystem = Local;
+GMAT HET1.Origin = Earth;
+GMAT HET1.Axes = VNB;
+GMAT HET1.ThrustDirection1 = 1;
+GMAT HET1.ThrustDirection2 = 0;
+GMAT HET1.ThrustDirection3 = 0;
+GMAT HET1.DutyCycle = 1;
+GMAT HET1.ThrustScaleFactor = 1;
+GMAT HET1.DecrementMass = true;
+GMAT HET1.Tank = {RAPTank1};
+GMAT HET1.MixRatio = [ 1 ];
+GMAT HET1.GravitationalAccel = 9.810000000000001;
+GMAT HET1.ThrustModel = ConstantThrustAndIsp;
+GMAT HET1.MaximumUsablePower = 10;
+GMAT HET1.MinimumUsablePower = 4;
+GMAT HET1.ThrustCoeff1 = -5.19082;
+GMAT HET1.ThrustCoeff2 = 2.96519;
+GMAT HET1.ThrustCoeff3 = -14.4789;
+GMAT HET1.ThrustCoeff4 = 54.05382;
+GMAT HET1.ThrustCoeff5 = -0.00100092;
+GMAT HET1.MassFlowCoeff1 = -0.004776;
+GMAT HET1.MassFlowCoeff2 = 0.05717;
+GMAT HET1.MassFlowCoeff3 = -0.09956;
+GMAT HET1.MassFlowCoeff4 = 0.03211;
+GMAT HET1.MassFlowCoeff5 = 2.13781;
+GMAT HET1.FixedEfficiency = 0.7;
+GMAT HET1.Isp = 2210;
+GMAT HET1.ConstantThrust = 0.449;
+
+Create SolarPowerSystem EOTVSolarArrays;
+GMAT EOTVSolarArrays.EpochFormat = 'UTCGregorian';
+GMAT EOTVSolarArrays.InitialEpoch = ''30 Dec 2020 23:59:28.000'';
+GMAT EOTVSolarArrays.InitialMaxPower = 128;
+GMAT EOTVSolarArrays.AnnualDecayRate = 5;
+GMAT EOTVSolarArrays.Margin = 5;
+GMAT EOTVSolarArrays.BusCoeff1 = 0.3;
+GMAT EOTVSolarArrays.BusCoeff2 = 0;
+GMAT EOTVSolarArrays.BusCoeff3 = 0;
+GMAT EOTVSolarArrays.ShadowModel = 'DualCone';
+GMAT EOTVSolarArrays.ShadowBodies = {'Earth'};
+GMAT EOTVSolarArrays.SolarCoeff1 = 1.32077;
+GMAT EOTVSolarArrays.SolarCoeff2 = -0.10848;
+GMAT EOTVSolarArrays.SolarCoeff3 = -0.11665;
+GMAT EOTVSolarArrays.SolarCoeff4 = 0.10843;
+GMAT EOTVSolarArrays.SolarCoeff5 = -0.01279;
+
+Create ElectricTank RAPTank1;
+GMAT RAPTank1.AllowNegativeFuelMass = false;
+GMAT RAPTank1.FuelMass = 700;
+
+Create ElectricThruster HET2;
+GMAT HET2.CoordinateSystem = Local;
+GMAT HET2.Origin = Earth;
+GMAT HET2.Axes = VNB;
+GMAT HET2.ThrustDirection1 = 1;
+GMAT HET2.ThrustDirection2 = 0;
+GMAT HET2.ThrustDirection3 = 0;
+GMAT HET2.DutyCycle = 1;
+GMAT HET2.ThrustScaleFactor = 1;
+GMAT HET2.DecrementMass = true;
+GMAT HET2.Tank = {RAPTank1};
+GMAT HET2.MixRatio = [ 1 ];
+GMAT HET2.GravitationalAccel = 9.810000000000001;
+GMAT HET2.ThrustModel = ConstantThrustAndIsp;
+GMAT HET2.MaximumUsablePower = 10;
+GMAT HET2.MinimumUsablePower = 4;
+GMAT HET2.ThrustCoeff1 = -5.19082;
+GMAT HET2.ThrustCoeff2 = 2.96519;
+GMAT HET2.ThrustCoeff3 = -14.4789;
+GMAT HET2.ThrustCoeff4 = 54.05382;
+GMAT HET2.ThrustCoeff5 = -0.00100092;
+GMAT HET2.MassFlowCoeff1 = -0.004776;
+GMAT HET2.MassFlowCoeff2 = 0.05717;
+GMAT HET2.MassFlowCoeff3 = -0.09956;
+GMAT HET2.MassFlowCoeff4 = 0.03211;
+GMAT HET2.MassFlowCoeff5 = 2.13781;
+GMAT HET2.FixedEfficiency = 0.7;
+GMAT HET2.Isp = 2210;
+GMAT HET2.ConstantThrust = 0.449;
+
+Create ElectricTank RAPTank2;
+GMAT RAPTank2.AllowNegativeFuelMass = false;
+GMAT RAPTank2.FuelMass = 700;
+
+Create ElectricTank RAPTank3;
+GMAT RAPTank3.AllowNegativeFuelMass = false;
+GMAT RAPTank3.FuelMass = 700;
+
+Create ElectricTank RAPTank4;
+GMAT RAPTank4.AllowNegativeFuelMass = false;
+GMAT RAPTank4.FuelMass = 700;
+
+Create ElectricThruster HET3;
+GMAT HET3.CoordinateSystem = Local;
+GMAT HET3.Origin = Earth;
+GMAT HET3.Axes = VNB;
+GMAT HET3.ThrustDirection1 = 1;
+GMAT HET3.ThrustDirection2 = 0;
+GMAT HET3.ThrustDirection3 = 0;
+GMAT HET3.DutyCycle = 1;
+GMAT HET3.ThrustScaleFactor = 1;
+GMAT HET3.DecrementMass = true;
+GMAT HET3.Tank = {RAPTank1};
+GMAT HET3.MixRatio = [ 1 ];
+GMAT HET3.GravitationalAccel = 9.810000000000001;
+GMAT HET3.ThrustModel = ConstantThrustAndIsp;
+GMAT HET3.MaximumUsablePower = 10;
+GMAT HET3.MinimumUsablePower = 4;
+GMAT HET3.ThrustCoeff1 = -5.19082;
+GMAT HET3.ThrustCoeff2 = 2.96519;
+GMAT HET3.ThrustCoeff3 = -14.4789;
+GMAT HET3.ThrustCoeff4 = 54.05382;
+GMAT HET3.ThrustCoeff5 = -0.00100092;
+GMAT HET3.MassFlowCoeff1 = -0.004776;
+GMAT HET3.MassFlowCoeff2 = 0.05717;
+GMAT HET3.MassFlowCoeff3 = -0.09956;
+GMAT HET3.MassFlowCoeff4 = 0.03211;
+GMAT HET3.MassFlowCoeff5 = 2.13781;
+GMAT HET3.FixedEfficiency = 0.7;
+GMAT HET3.Isp = 2210;
+GMAT HET3.ConstantThrust = 0.449;
+
+Create ElectricThruster HET4;
+GMAT HET4.CoordinateSystem = Local;
+GMAT HET4.Origin = Earth;
+GMAT HET4.Axes = VNB;
+GMAT HET4.ThrustDirection1 = 1;
+GMAT HET4.ThrustDirection2 = 0;
+GMAT HET4.ThrustDirection3 = 0;
+GMAT HET4.DutyCycle = 1;
+GMAT HET4.ThrustScaleFactor = 1;
+GMAT HET4.DecrementMass = true;
+GMAT HET4.Tank = {RAPTank1};
+GMAT HET4.MixRatio = [ 1 ];
+GMAT HET4.GravitationalAccel = 9.810000000000001;
+GMAT HET4.ThrustModel = ConstantThrustAndIsp;
+GMAT HET4.MaximumUsablePower = 10;
+GMAT HET4.MinimumUsablePower = 4;
+GMAT HET4.ThrustCoeff1 = -5.19082;
+GMAT HET4.ThrustCoeff2 = 2.96519;
+GMAT HET4.ThrustCoeff3 = -14.4789;
+GMAT HET4.ThrustCoeff4 = 54.05382;
+GMAT HET4.ThrustCoeff5 = -0.00100092;
+GMAT HET4.MassFlowCoeff1 = -0.004776;
+GMAT HET4.MassFlowCoeff2 = 0.05717;
+GMAT HET4.MassFlowCoeff3 = -0.09956;
+GMAT HET4.MassFlowCoeff4 = 0.03211;
+GMAT HET4.MassFlowCoeff5 = 2.13781;
+GMAT HET4.FixedEfficiency = 0.7;
+GMAT HET4.Isp = 2210;
+GMAT HET4.ConstantThrust = 0.449;
+
+Create ElectricThruster HET5;
+GMAT HET5.CoordinateSystem = Local;
+GMAT HET5.Origin = Earth;
+GMAT HET5.Axes = VNB;
+GMAT HET5.ThrustDirection1 = 1;
+GMAT HET5.ThrustDirection2 = 0;
+GMAT HET5.ThrustDirection3 = 0;
+GMAT HET5.DutyCycle = 1;
+GMAT HET5.ThrustScaleFactor = 1;
+GMAT HET5.DecrementMass = true;
+GMAT HET5.Tank = {RAPTank2};
+GMAT HET5.MixRatio = [ 1 ];
+GMAT HET5.GravitationalAccel = 9.810000000000001;
+GMAT HET5.ThrustModel = ConstantThrustAndIsp;
+GMAT HET5.MaximumUsablePower = 10;
+GMAT HET5.MinimumUsablePower = 4;
+GMAT HET5.ThrustCoeff1 = -5.19082;
+GMAT HET5.ThrustCoeff2 = 2.96519;
+GMAT HET5.ThrustCoeff3 = -14.4789;
+GMAT HET5.ThrustCoeff4 = 54.05382;
+GMAT HET5.ThrustCoeff5 = -0.00100092;
+GMAT HET5.MassFlowCoeff1 = -0.004776;
+GMAT HET5.MassFlowCoeff2 = 0.05717;
+GMAT HET5.MassFlowCoeff3 = -0.09956;
+GMAT HET5.MassFlowCoeff4 = 0.03211;
+GMAT HET5.MassFlowCoeff5 = 2.13781;
+GMAT HET5.FixedEfficiency = 0.7;
+GMAT HET5.Isp = 2210;
+GMAT HET5.ConstantThrust = 0.449;
+
+Create ElectricThruster HET6;
+GMAT HET6.CoordinateSystem = Local;
+GMAT HET6.Origin = Earth;
+GMAT HET6.Axes = VNB;
+GMAT HET6.ThrustDirection1 = 1;
+GMAT HET6.ThrustDirection2 = 0;
+GMAT HET6.ThrustDirection3 = 0;
+GMAT HET6.DutyCycle = 1;
+GMAT HET6.ThrustScaleFactor = 1;
+GMAT HET6.DecrementMass = true;
+GMAT HET6.Tank = {RAPTank2};
+GMAT HET6.MixRatio = [ 1 ];
+GMAT HET6.GravitationalAccel = 9.810000000000001;
+GMAT HET6.ThrustModel = ConstantThrustAndIsp;
+GMAT HET6.MaximumUsablePower = 10;
+GMAT HET6.MinimumUsablePower = 4;
+GMAT HET6.ThrustCoeff1 = -5.19082;
+GMAT HET6.ThrustCoeff2 = 2.96519;
+GMAT HET6.ThrustCoeff3 = -14.4789;
+GMAT HET6.ThrustCoeff4 = 54.05382;
+GMAT HET6.ThrustCoeff5 = -0.00100092;
+GMAT HET6.MassFlowCoeff1 = -0.004776;
+GMAT HET6.MassFlowCoeff2 = 0.05717;
+GMAT HET6.MassFlowCoeff3 = -0.09956;
+GMAT HET6.MassFlowCoeff4 = 0.03211;
+GMAT HET6.MassFlowCoeff5 = 2.13781;
+GMAT HET6.FixedEfficiency = 0.7;
+GMAT HET6.Isp = 2210;
+GMAT HET6.ConstantThrust = 0.449;
+
+Create ElectricThruster HET7;
+GMAT HET7.CoordinateSystem = Local;
+GMAT HET7.Origin = Earth;
+GMAT HET7.Axes = VNB;
+GMAT HET7.ThrustDirection1 = 1;
+GMAT HET7.ThrustDirection2 = 0;
+GMAT HET7.ThrustDirection3 = 0;
+GMAT HET7.DutyCycle = 1;
+GMAT HET7.ThrustScaleFactor = 1;
+GMAT HET7.DecrementMass = true;
+GMAT HET7.Tank = {RAPTank2};
+GMAT HET7.MixRatio = [ 1 ];
+GMAT HET7.GravitationalAccel = 9.810000000000001;
+GMAT HET7.ThrustModel = ConstantThrustAndIsp;
+GMAT HET7.MaximumUsablePower = 10;
+GMAT HET7.MinimumUsablePower = 4;
+GMAT HET7.ThrustCoeff1 = -5.19082;
+GMAT HET7.ThrustCoeff2 = 2.96519;
+GMAT HET7.ThrustCoeff3 = -14.4789;
+GMAT HET7.ThrustCoeff4 = 54.05382;
+GMAT HET7.ThrustCoeff5 = -0.00100092;
+GMAT HET7.MassFlowCoeff1 = -0.004776;
+GMAT HET7.MassFlowCoeff2 = 0.05717;
+GMAT HET7.MassFlowCoeff3 = -0.09956;
+GMAT HET7.MassFlowCoeff4 = 0.03211;
+GMAT HET7.MassFlowCoeff5 = 2.13781;
+GMAT HET7.FixedEfficiency = 0.7;
+GMAT HET7.Isp = 2210;
+GMAT HET7.ConstantThrust = 0.449;
+
+Create ElectricThruster HET8;
+GMAT HET8.CoordinateSystem = Local;
+GMAT HET8.Origin = Earth;
+GMAT HET8.Axes = VNB;
+GMAT HET8.ThrustDirection1 = 1;
+GMAT HET8.ThrustDirection2 = 0;
+GMAT HET8.ThrustDirection3 = 0;
+GMAT HET8.DutyCycle = 1;
+GMAT HET8.ThrustScaleFactor = 1;
+GMAT HET8.DecrementMass = true;
+GMAT HET8.Tank = {RAPTank2};
+GMAT HET8.MixRatio = [ 1 ];
+GMAT HET8.GravitationalAccel = 9.810000000000001;
+GMAT HET8.ThrustModel = ConstantThrustAndIsp;
+GMAT HET8.MaximumUsablePower = 10;
+GMAT HET8.MinimumUsablePower = 4;
+GMAT HET8.ThrustCoeff1 = -5.19082;
+GMAT HET8.ThrustCoeff2 = 2.96519;
+GMAT HET8.ThrustCoeff3 = -14.4789;
+GMAT HET8.ThrustCoeff4 = 54.05382;
+GMAT HET8.ThrustCoeff5 = -0.00100092;
+GMAT HET8.MassFlowCoeff1 = -0.004776;
+GMAT HET8.MassFlowCoeff2 = 0.05717;
+GMAT HET8.MassFlowCoeff3 = -0.09956;
+GMAT HET8.MassFlowCoeff4 = 0.03211;
+GMAT HET8.MassFlowCoeff5 = 2.13781;
+GMAT HET8.FixedEfficiency = 0.7;
+GMAT HET8.Isp = 2210;
+GMAT HET8.ConstantThrust = 0.449;
+
+Create ElectricThruster HET9;
+GMAT HET9.CoordinateSystem = Local;
+GMAT HET9.Origin = Earth;
+GMAT HET9.Axes = VNB;
+GMAT HET9.ThrustDirection1 = 1;
+GMAT HET9.ThrustDirection2 = 0;
+GMAT HET9.ThrustDirection3 = 0;
+GMAT HET9.DutyCycle = 1;
+GMAT HET9.ThrustScaleFactor = 1;
+GMAT HET9.DecrementMass = true;
+GMAT HET9.Tank = {RAPTank3};
+GMAT HET9.MixRatio = [ 1 ];
+GMAT HET9.GravitationalAccel = 9.810000000000001;
+GMAT HET9.ThrustModel = ConstantThrustAndIsp;
+GMAT HET9.MaximumUsablePower = 10;
+GMAT HET9.MinimumUsablePower = 4;
+GMAT HET9.ThrustCoeff1 = -5.19082;
+GMAT HET9.ThrustCoeff2 = 2.96519;
+GMAT HET9.ThrustCoeff3 = -14.4789;
+GMAT HET9.ThrustCoeff4 = 54.05382;
+GMAT HET9.ThrustCoeff5 = -0.00100092;
+GMAT HET9.MassFlowCoeff1 = -0.004776;
+GMAT HET9.MassFlowCoeff2 = 0.05717;
+GMAT HET9.MassFlowCoeff3 = -0.09956;
+GMAT HET9.MassFlowCoeff4 = 0.03211;
+GMAT HET9.MassFlowCoeff5 = 2.13781;
+GMAT HET9.FixedEfficiency = 0.7;
+GMAT HET9.Isp = 2210;
+GMAT HET9.ConstantThrust = 0.449;
+
+Create ElectricThruster HET10;
+GMAT HET10.CoordinateSystem = Local;
+GMAT HET10.Origin = Earth;
+GMAT HET10.Axes = VNB;
+GMAT HET10.ThrustDirection1 = 1;
+GMAT HET10.ThrustDirection2 = 0;
+GMAT HET10.ThrustDirection3 = 0;
+GMAT HET10.DutyCycle = 1;
+GMAT HET10.ThrustScaleFactor = 1;
+GMAT HET10.DecrementMass = true;
+GMAT HET10.Tank = {RAPTank3};
+GMAT HET10.MixRatio = [ 1 ];
+GMAT HET10.GravitationalAccel = 9.810000000000001;
+GMAT HET10.ThrustModel = ConstantThrustAndIsp;
+GMAT HET10.MaximumUsablePower = 10;
+GMAT HET10.MinimumUsablePower = 4;
+GMAT HET10.ThrustCoeff1 = -5.19082;
+GMAT HET10.ThrustCoeff2 = 2.96519;
+GMAT HET10.ThrustCoeff3 = -14.4789;
+GMAT HET10.ThrustCoeff4 = 54.05382;
+GMAT HET10.ThrustCoeff5 = -0.00100092;
+GMAT HET10.MassFlowCoeff1 = -0.004776;
+GMAT HET10.MassFlowCoeff2 = 0.05717;
+GMAT HET10.MassFlowCoeff3 = -0.09956;
+GMAT HET10.MassFlowCoeff4 = 0.03211;
+GMAT HET10.MassFlowCoeff5 = 2.13781;
+GMAT HET10.FixedEfficiency = 0.7;
+GMAT HET10.Isp = 2210;
+GMAT HET10.ConstantThrust = 0.449;
+
+Create ElectricThruster HET11;
+GMAT HET11.CoordinateSystem = Local;
+GMAT HET11.Origin = Earth;
+GMAT HET11.Axes = VNB;
+GMAT HET11.ThrustDirection1 = 1;
+GMAT HET11.ThrustDirection2 = 0;
+GMAT HET11.ThrustDirection3 = 0;
+GMAT HET11.DutyCycle = 1;
+GMAT HET11.ThrustScaleFactor = 1;
+GMAT HET11.DecrementMass = true;
+GMAT HET11.Tank = {RAPTank3};
+GMAT HET11.MixRatio = [ 1 ];
+GMAT HET11.GravitationalAccel = 9.810000000000001;
+GMAT HET11.ThrustModel = ConstantThrustAndIsp;
+GMAT HET11.MaximumUsablePower = 10;
+GMAT HET11.MinimumUsablePower = 4;
+GMAT HET11.ThrustCoeff1 = -5.19082;
+GMAT HET11.ThrustCoeff2 = 2.96519;
+GMAT HET11.ThrustCoeff3 = -14.4789;
+GMAT HET11.ThrustCoeff4 = 54.05382;
+GMAT HET11.ThrustCoeff5 = -0.00100092;
+GMAT HET11.MassFlowCoeff1 = -0.004776;
+GMAT HET11.MassFlowCoeff2 = 0.05717;
+GMAT HET11.MassFlowCoeff3 = -0.09956;
+GMAT HET11.MassFlowCoeff4 = 0.03211;
+GMAT HET11.MassFlowCoeff5 = 2.13781;
+GMAT HET11.FixedEfficiency = 0.7;
+GMAT HET11.Isp = 2210;
+GMAT HET11.ConstantThrust = 0.449;
+
+Create ElectricThruster HET12;
+GMAT HET12.CoordinateSystem = Local;
+GMAT HET12.Origin = Earth;
+GMAT HET12.Axes = VNB;
+GMAT HET12.ThrustDirection1 = 1;
+GMAT HET12.ThrustDirection2 = 0;
+GMAT HET12.ThrustDirection3 = 0;
+GMAT HET12.DutyCycle = 1;
+GMAT HET12.ThrustScaleFactor = 1;
+GMAT HET12.DecrementMass = true;
+GMAT HET12.Tank = {RAPTank3};
+GMAT HET12.MixRatio = [ 1 ];
+GMAT HET12.GravitationalAccel = 9.810000000000001;
+GMAT HET12.ThrustModel = ConstantThrustAndIsp;
+GMAT HET12.MaximumUsablePower = 10;
+GMAT HET12.MinimumUsablePower = 4;
+GMAT HET12.ThrustCoeff1 = -5.19082;
+GMAT HET12.ThrustCoeff2 = 2.96519;
+GMAT HET12.ThrustCoeff3 = -14.4789;
+GMAT HET12.ThrustCoeff4 = 54.05382;
+GMAT HET12.ThrustCoeff5 = -0.00100092;
+GMAT HET12.MassFlowCoeff1 = -0.004776;
+GMAT HET12.MassFlowCoeff2 = 0.05717;
+GMAT HET12.MassFlowCoeff3 = -0.09956;
+GMAT HET12.MassFlowCoeff4 = 0.03211;
+GMAT HET12.MassFlowCoeff5 = 2.13781;
+GMAT HET12.FixedEfficiency = 0.7;
+GMAT HET12.Isp = 2210;
+GMAT HET12.ConstantThrust = 0.449;
+
+Create ElectricThruster HET13;
+GMAT HET13.CoordinateSystem = Local;
+GMAT HET13.Origin = Earth;
+GMAT HET13.Axes = VNB;
+GMAT HET13.ThrustDirection1 = 1;
+GMAT HET13.ThrustDirection2 = 0;
+GMAT HET13.ThrustDirection3 = 0;
+GMAT HET13.DutyCycle = 1;
+GMAT HET13.ThrustScaleFactor = 1;
+GMAT HET13.DecrementMass = true;
+GMAT HET13.Tank = {RAPTank4};
+GMAT HET13.MixRatio = [ 1 ];
+GMAT HET13.GravitationalAccel = 9.810000000000001;
+GMAT HET13.ThrustModel = ConstantThrustAndIsp;
+GMAT HET13.MaximumUsablePower = 10;
+GMAT HET13.MinimumUsablePower = 4;
+GMAT HET13.ThrustCoeff1 = -5.19082;
+GMAT HET13.ThrustCoeff2 = 2.96519;
+GMAT HET13.ThrustCoeff3 = -14.4789;
+GMAT HET13.ThrustCoeff4 = 54.05382;
+GMAT HET13.ThrustCoeff5 = -0.00100092;
+GMAT HET13.MassFlowCoeff1 = -0.004776;
+GMAT HET13.MassFlowCoeff2 = 0.05717;
+GMAT HET13.MassFlowCoeff3 = -0.09956;
+GMAT HET13.MassFlowCoeff4 = 0.03211;
+GMAT HET13.MassFlowCoeff5 = 2.13781;
+GMAT HET13.FixedEfficiency = 0.7;
+GMAT HET13.Isp = 2210;
+GMAT HET13.ConstantThrust = 0.449;
+
+Create ElectricThruster HET14;
+GMAT HET14.CoordinateSystem = Local;
+GMAT HET14.Origin = Earth;
+GMAT HET14.Axes = VNB;
+GMAT HET14.ThrustDirection1 = 1;
+GMAT HET14.ThrustDirection2 = 0;
+GMAT HET14.ThrustDirection3 = 0;
+GMAT HET14.DutyCycle = 1;
+GMAT HET14.ThrustScaleFactor = 1;
+GMAT HET14.DecrementMass = true;
+GMAT HET14.Tank = {RAPTank4};
+GMAT HET14.MixRatio = [ 1 ];
+GMAT HET14.GravitationalAccel = 9.810000000000001;
+GMAT HET14.ThrustModel = ConstantThrustAndIsp;
+GMAT HET14.MaximumUsablePower = 10;
+GMAT HET14.MinimumUsablePower = 4;
+GMAT HET14.ThrustCoeff1 = -5.19082;
+GMAT HET14.ThrustCoeff2 = 2.96519;
+GMAT HET14.ThrustCoeff3 = -14.4789;
+GMAT HET14.ThrustCoeff4 = 54.05382;
+GMAT HET14.ThrustCoeff5 = -0.00100092;
+GMAT HET14.MassFlowCoeff1 = -0.004776;
+GMAT HET14.MassFlowCoeff2 = 0.05717;
+GMAT HET14.MassFlowCoeff3 = -0.09956;
+GMAT HET14.MassFlowCoeff4 = 0.03211;
+GMAT HET14.MassFlowCoeff5 = 2.13781;
+GMAT HET14.FixedEfficiency = 0.7;
+GMAT HET14.Isp = 2210;
+GMAT HET14.ConstantThrust = 0.449;
+
+Create ElectricThruster HET15;
+GMAT HET15.CoordinateSystem = Local;
+GMAT HET15.Origin = Earth;
+GMAT HET15.Axes = VNB;
+GMAT HET15.ThrustDirection1 = 1;
+GMAT HET15.ThrustDirection2 = 0;
+GMAT HET15.ThrustDirection3 = 0;
+GMAT HET15.DutyCycle = 1;
+GMAT HET15.ThrustScaleFactor = 1;
+GMAT HET15.DecrementMass = true;
+GMAT HET15.Tank = {RAPTank4};
+GMAT HET15.MixRatio = [ 1 ];
+GMAT HET15.GravitationalAccel = 9.810000000000001;
+GMAT HET15.ThrustModel = ConstantThrustAndIsp;
+GMAT HET15.MaximumUsablePower = 10;
+GMAT HET15.MinimumUsablePower = 4;
+GMAT HET15.ThrustCoeff1 = -5.19082;
+GMAT HET15.ThrustCoeff2 = 2.96519;
+GMAT HET15.ThrustCoeff3 = -14.4789;
+GMAT HET15.ThrustCoeff4 = 54.05382;
+GMAT HET15.ThrustCoeff5 = -0.00100092;
+GMAT HET15.MassFlowCoeff1 = -0.004776;
+GMAT HET15.MassFlowCoeff2 = 0.05717;
+GMAT HET15.MassFlowCoeff3 = -0.09956;
+GMAT HET15.MassFlowCoeff4 = 0.03211;
+GMAT HET15.MassFlowCoeff5 = 2.13781;
+GMAT HET15.FixedEfficiency = 0.7;
+GMAT HET15.Isp = 2210;
+GMAT HET15.ConstantThrust = 0.449;
+
+Create ElectricThruster HET16;
+GMAT HET16.CoordinateSystem = Local;
+GMAT HET16.Origin = Earth;
+GMAT HET16.Axes = VNB;
+GMAT HET16.ThrustDirection1 = 1;
+GMAT HET16.ThrustDirection2 = 0;
+GMAT HET16.ThrustDirection3 = 0;
+GMAT HET16.DutyCycle = 1;
+GMAT HET16.ThrustScaleFactor = 1;
+GMAT HET16.DecrementMass = true;
+GMAT HET16.Tank = {RAPTank4};
+GMAT HET16.MixRatio = [ 1 ];
+GMAT HET16.GravitationalAccel = 9.810000000000001;
+GMAT HET16.ThrustModel = ConstantThrustAndIsp;
+GMAT HET16.MaximumUsablePower = 10;
+GMAT HET16.MinimumUsablePower = 4;
+GMAT HET16.ThrustCoeff1 = -5.19082;
+GMAT HET16.ThrustCoeff2 = 2.96519;
+GMAT HET16.ThrustCoeff3 = -14.4789;
+GMAT HET16.ThrustCoeff4 = 54.05382;
+GMAT HET16.ThrustCoeff5 = -0.00100092;
+GMAT HET16.MassFlowCoeff1 = -0.004776;
+GMAT HET16.MassFlowCoeff2 = 0.05717;
+GMAT HET16.MassFlowCoeff3 = -0.09956;
+GMAT HET16.MassFlowCoeff4 = 0.03211;
+GMAT HET16.MassFlowCoeff5 = 2.13781;
+GMAT HET16.FixedEfficiency = 0.7;
+GMAT HET16.Isp = 2210;
+GMAT HET16.ConstantThrust = 0.449;
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel DefaultProp_ForceModel;
+GMAT DefaultProp_ForceModel.CentralBody = Earth;
+GMAT DefaultProp_ForceModel.PrimaryBodies = {Earth};
+GMAT DefaultProp_ForceModel.Drag = None;
+GMAT DefaultProp_ForceModel.SRP = Off;
+GMAT DefaultProp_ForceModel.RelativisticCorrection = Off;
+GMAT DefaultProp_ForceModel.ErrorControl = RSSStep;
+GMAT DefaultProp_ForceModel.GravityField.Earth.Degree = 4;
+GMAT DefaultProp_ForceModel.GravityField.Earth.Order = 4;
+GMAT DefaultProp_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT DefaultProp_ForceModel.GravityField.Earth.EarthTideModel = 'None';
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator DefaultProp;
+GMAT DefaultProp.FM = DefaultProp_ForceModel;
+GMAT DefaultProp.Type = PrinceDormand78;
+GMAT DefaultProp.InitialStepSize = 60;
+GMAT DefaultProp.Accuracy = 1e-012;
+GMAT DefaultProp.MinStep = 0;
+GMAT DefaultProp.MaxStep = 86400;
+GMAT DefaultProp.MaxStepAttempts = 50;
+GMAT DefaultProp.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create FiniteBurn DefaultFB;
+GMAT DefaultFB.Thrusters = {HET1, HET2, HET3, HET4, HET5, HET6, HET7, HET8, HET9, HET10, HET11, HET12, HET13, HET14, HET15, HET16};
+GMAT DefaultFB.ThrottleLogicAlgorithm = 'MaxNumberOfThrusters';
+
+%----------------------------------------
+%---------- EventLocators
+%----------------------------------------
+
+Create EclipseLocator EclipseLocator1;
+GMAT EclipseLocator1.Spacecraft = EOTV;
+GMAT EclipseLocator1.Filename = 'C:\Users\chelm\Documents\WorkingFolder\ProjectRoot\GMAT\EOTV_EclipseLocator1.txt';
+GMAT EclipseLocator1.OccultingBodies = {Earth, Luna};
+GMAT EclipseLocator1.InputEpochFormat = 'TAIModJulian';
+GMAT EclipseLocator1.InitialEpoch = '21545';
+GMAT EclipseLocator1.StepSize = 10;
+GMAT EclipseLocator1.FinalEpoch = '21545.138';
+GMAT EclipseLocator1.UseLightTimeDelay = true;
+GMAT EclipseLocator1.UseStellarAberration = false;
+GMAT EclipseLocator1.WriteReport = true;
+GMAT EclipseLocator1.RunMode = Disabled;
+GMAT EclipseLocator1.UseEntireInterval = true;
+GMAT EclipseLocator1.EclipseTypes = {'Umbra', 'Penumbra', 'Antumbra'};
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView DefaultOrbitView;
+GMAT DefaultOrbitView.SolverIterations = Current;
+GMAT DefaultOrbitView.UpperLeft = [ 0 0 ];
+GMAT DefaultOrbitView.Size = [ 0.7347058823529412 0.9954545454545455 ];
+GMAT DefaultOrbitView.RelativeZOrder = 580;
+GMAT DefaultOrbitView.Maximized = false;
+GMAT DefaultOrbitView.Add = {EOTV, Earth};
+GMAT DefaultOrbitView.CoordinateSystem = EarthMJ2000Eq;
+GMAT DefaultOrbitView.DrawObject = [ true true ];
+GMAT DefaultOrbitView.DataCollectFrequency = 1;
+GMAT DefaultOrbitView.UpdatePlotFrequency = 50;
+GMAT DefaultOrbitView.NumPointsToRedraw = 0;
+GMAT DefaultOrbitView.ShowPlot = true;
+GMAT DefaultOrbitView.ShowLabels = true;
+GMAT DefaultOrbitView.ViewPointReference = Earth;
+GMAT DefaultOrbitView.ViewPointVector = [ 50000 0 50000 ];
+GMAT DefaultOrbitView.ViewDirection = Earth;
+GMAT DefaultOrbitView.ViewScaleFactor = 1;
+GMAT DefaultOrbitView.ViewUpCoordinateSystem = EarthMJ2000Eq;
+GMAT DefaultOrbitView.ViewUpAxis = Z;
+GMAT DefaultOrbitView.EclipticPlane = Off;
+GMAT DefaultOrbitView.XYPlane = On;
+GMAT DefaultOrbitView.WireFrame = Off;
+GMAT DefaultOrbitView.Axes = On;
+GMAT DefaultOrbitView.Grid = Off;
+GMAT DefaultOrbitView.SunLine = Off;
+GMAT DefaultOrbitView.UseInitialView = On;
+GMAT DefaultOrbitView.StarCount = 7000;
+GMAT DefaultOrbitView.EnableStars = On;
+GMAT DefaultOrbitView.EnableConstellations = On;
+
+Create ReportFile ReportFile1;
+GMAT ReportFile1.SolverIterations = Current;
+GMAT ReportFile1.UpperLeft = [ 0 0 ];
+GMAT ReportFile1.Size = [ 0 0 ];
+GMAT ReportFile1.RelativeZOrder = 0;
+GMAT ReportFile1.Maximized = false;
+GMAT ReportFile1.Filename = 'C:\Users\chelm\Documents\WorkingFolder\ProjectRoot\GMAT\ReportFile_EOTV_v7.csv';
+GMAT ReportFile1.Precision = 16;
+GMAT ReportFile1.Add = {EOTV.A1ModJulian, EOTV.ElapsedDays, EOTV.Earth.SMA, EOTV.Earth.ECC, EOTV.EarthMJ2000Eq.INC, EOTV.RAPTank1.FuelMass, EOTV.EarthMJ2000Eq.VMAG, EOTV.EarthMJ2000Eq.VX, EOTV.EarthMJ2000Eq.VY, EOTV.EarthMJ2000Eq.VZ};
+GMAT ReportFile1.WriteHeaders = true;
+GMAT ReportFile1.LeftJustify = On;
+GMAT ReportFile1.ZeroFill = Off;
+GMAT ReportFile1.FixedWidth = false;
+GMAT ReportFile1.Delimiter = ',';
+GMAT ReportFile1.ColumnWidth = 23;
+GMAT ReportFile1.WriteReport = true;
+
+%----------------------------------------
+%---------- Arrays, Variables, Strings
+%----------------------------------------
+Create Variable lambda_i yaw_angle r_initial, orbit_R;
+GMAT lambda_i = -0.54;
+GMAT yaw_angle = 0;
+GMAT r_initial = 6378.1366;
+GMAT orbit_R = 1;
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+
+Global 'Make Objects Global' EOTV HET1;
+
+BeginFiniteBurn DefaultFB(EOTV);
+
+GMAT [orbit_R] = EOTV.Earth.SMA
+GMAT [yaw_angle] = Python.YawAngles.get_yaw_angle(TA, orbit_R)
+%Report Log_EOTV_Controls.txt EOTV.A1ModJulian EOTV.Earth.SMA EOTV.Earth.TA contol_var;
+
+Propagate DefaultProp(EOTV) {EOTV.Earth.Altitude = 35786};
+EndFiniteBurn DefaultFB(EOTV);

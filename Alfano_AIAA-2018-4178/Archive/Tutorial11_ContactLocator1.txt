@@ -1,0 +1,26 @@
+Target: DefaultSC
+
+Observer: GTS
+Start Time (UTC)            Stop Time (UTC)               Duration (s)         
+22 Jul 2014 12:48:32.640    22 Jul 2014 12:50:19.948      107.30845380    
+
+
+Number of events : 1
+
+
+Observer: HTS
+Start Time (UTC)            Stop Time (UTC)               Duration (s)         
+22 Jul 2014 12:54:58.591    23 Jul 2014 18:01:57.340      104818.74947    
+
+
+Number of events : 1
+
+
+Observer: VTS
+Start Time (UTC)            Stop Time (UTC)               Duration (s)         
+22 Jul 2014 13:03:35.575    23 Jul 2014 18:01:57.339      104301.76404    
+
+
+Number of events : 1
+
+

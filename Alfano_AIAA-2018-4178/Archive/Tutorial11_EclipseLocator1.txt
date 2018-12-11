@@ -1,0 +1,13 @@
+Spacecraft: DefaultSC
+
+Start Time (UTC)            Stop Time (UTC)               Duration (s)    Occ Body        Type        Event Number  Total Duration (s)
+22 Jul 2014 12:35:25.560    22 Jul 2014 12:35:34.368      8.8078995701    Earth           Penumbra    1             1600.4832505
+22 Jul 2014 12:35:34.368    22 Jul 2014 13:01:56.058      1581.6905256    Earth           Umbra       1             1600.4832505
+22 Jul 2014 13:01:56.058    22 Jul 2014 13:02:06.043      9.9848253303    Earth           Penumbra    1             1600.4832505
+
+Number of individual events : 3
+Number of total events      : 1
+Maximum duration (s)        :   1600.4832505
+Maximum duration at the 1st eclipse.
+
+
