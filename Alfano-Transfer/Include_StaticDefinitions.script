@@ -153,7 +153,7 @@ GMAT TrimPropagator_ForceModel.ErrorControl = RSSStep;
 GMAT TrimPropagator_ForceModel.GravityField.Earth.Degree = 4;
 GMAT TrimPropagator_ForceModel.GravityField.Earth.Order = 4;
 GMAT TrimPropagator_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
-GMAT TrimPropagator_ForceModel.GravityField.Earth.EarthTideModel = 'None';
+%GMAT TrimPropagator_ForceModel.GravityField.Earth.EarthTideModel = 'None';
 
 %----------------------------------------
 %---------- Propagators
@@ -232,8 +232,9 @@ GMAT ReportFile1.Size = [ 0 0 ];
 GMAT ReportFile1.RelativeZOrder = 0;
 GMAT ReportFile1.Maximized = false;
 %GMAT ReportFile1.Filename = 'C:\Users\chelm\Documents\WorkingFolder\ProjectRoot\GMAT\ReportFile_AlfanoXfer.csv';
-GMAT ReportFile1.Precision = 16;
-GMAT ReportFile1.Add = {EOTV.TAIGregorian, EOTV.ElapsedDays, EOTV.RAPTank1.FuelMass, EOTV.EOTVSolarArrays.ThrustPowerAvailable, REV, AOL, EOTV.Earth.BetaAngle, EOTV.EarthMJ2000Eq.INC, EOTV.Earth.SMA, EOTV.Earth.ECC, EOTV.EarthMJ2000Eq.AOP, EOTV.EarthMJ2000Eq.RAAN, EOTV.HET1.ThrustDirection1, EOTV.HET1.ThrustDirection2, EOTV.HET1.ThrustDirection3, EOTV.TotalMass};
+GMAT ReportFile1.Precision = 8;
+% The column A-F layout in this report is assumed by reduce_report.py.  If the report is changed, update reduce_report.
+GMAT ReportFile1.Add = {EOTV.ElapsedDays, REV, EOTV.RAPTank1.FuelMass, EOTV.Earth.SMA, EOTV.EarthMJ2000Eq.INC, EOTV.Earth.ECC, EOTV.EarthMJ2000Eq.RAAN, EOTV.EarthMJ2000Eq.Z, EOTV.Earth.OrbitPeriod, EOTV.EarthMJ2000Eq.AOP, EOTV.Earth.TA, AOL, EOTV.EOTVSolarArrays.ThrustPowerAvailable, EOTV.HET1.ThrustDirection1, EOTV.HET1.ThrustDirection2, EOTV.HET1.ThrustDirection3, EOTV.Earth.BetaAngle};
 GMAT ReportFile1.WriteHeaders = true;
 GMAT ReportFile1.LeftJustify = On;
 GMAT ReportFile1.ZeroFill = Off;
